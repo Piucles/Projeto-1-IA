@@ -21,7 +21,8 @@ O agente conhece o tamanho do labirinto (uma grade 12x12), o conteúdo da célul
 
 o agente dever ser posicionado inicialmente na célula (5,12), conforme descrito na grade do labirinto.
 
-O desempenho do agente é calculado após atingir o critério de término. A medida de desempenho do agente é o número de passos utilizados para completar o labirinto. O labirinto é concluído quando o agente chega à célula (11,1)
+O desempenho do agente é calculado após atingir o critério de término. A medida de desempenho do agente é o número de passos utilizados para completar o labirinto. O labirinto é
+ concluído quando o agente chega à célula (11,1)
 
 O ambiente é determinístico e totalmente observável
 
@@ -39,79 +40,104 @@ matriz = [  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
             [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
+        
 '''
 
-from collections import deque
+# Função para percorrer o grafo usando BFS e parar em uma coordenada alvo
+def percorrer_bfs_ate_destino(grafo, start, destino):
+    visitados = set()  # Para rastrear nós visitados
+    fila = [start]  # Fila para a ordem de visita
+    percurso = []  # Para armazenar a ordem do percurso
 
-# Definindo o labirinto
-matriz = [  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
-            [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
-            [0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1],
-            [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-            [0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-            [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-            [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-
-# Definindo os parâmetros do problema
-estado_inicial = (4, 11)
-objetivo = (10, 0)
-movimentos = [(-1, 0), (0, -1), (0, 1), (1, 0)]  # Cima, Esquerda, Direita, Baixo
-
-def busca_em_largura(matriz, estado_inicial, objetivo):
-    fila = deque([estado_inicial])
-    visitados = set()
-    caminho = {estado_inicial: None}
-    
     while fila:
-        estado_atual = fila.popleft()
-        
-        if estado_atual == objetivo:
-            return reconstruir_caminho(caminho, estado_inicial, objetivo)
-        
-        for movimento in movimentos:
-            novo_estado = (estado_atual[0] + movimento[0], estado_atual[1] + movimento[1])
+        atual = fila.pop(0)  # Remove o primeiro nó da fila
+        if atual not in visitados:
+            visitados.add(atual)  # Marca o nó como visitado
+            percurso.append(atual)  # Adiciona ao percurso
             
-            if (0 <= novo_estado[0] < len(matriz) and
-                0 <= novo_estado[1] < len(matriz[0]) and
-                matriz[novo_estado[0]][novo_estado[1]] == 1 and
-                novo_estado not in visitados):
-                
-                fila.append(novo_estado)
-                visitados.add(novo_estado)
-                caminho[novo_estado] = estado_atual
+            # Verifica se o nó atual é o destino
+            if atual == destino:
+                return percurso
+            
+            # Adiciona os vizinhos do nó atual na fila
+            fila.extend(grafo.get(atual, []))
+
+    return percurso  # Retorna o percurso caso o destino não seja encontrado
+
+# Função para imprimir o labirinto percorrido
+def imprimir_labirinto(matriz, caminho):
+    # Cria uma cópia da matriz original
+    matriz_percorrida = [row[:] for row in matriz]
     
-    return None
+    # Marca as células visitadas no caminho
+    for x, y in caminho:
+        matriz_percorrida[x][y] = 'X'
 
-def reconstruir_caminho(caminho, inicio, fim):
-    atual = fim
-    caminho_reconstruido = []
+    # Imprime a matriz modificada
+    print("Labirinto percorrido:")
+    for linha in matriz_percorrida:
+        print(" ".join(str(c) for c in linha))
+
+# Função para converter uma matriz em um grafo
+def matriz_para_grafo(matriz):
+    grafo = {}
+    linhas = len(matriz)
+    colunas = len(matriz[0])
     
-    while atual is not None:
-        caminho_reconstruido.append(atual)
-        atual = caminho[atual]
+    # Função auxiliar para verificar se a posição é válida
+    def posicao_valida(x, y):
+        return 0 <= x < linhas and 0 <= y < colunas and matriz[x][y] == 1
     
-    caminho_reconstruido.reverse()
-    return caminho_reconstruido
+    # Criar os nós e arestas do grafo
+    for x in range(linhas):
+        for y in range(colunas):
+            if matriz[x][y] == 1:  # Só processa células que podem ser visitadas
+                vizinhos = []
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:  # Movimentos: cima, baixo, esquerda, direita
+                    nx, ny = x + dx, y + dy
+                    if posicao_valida(nx, ny):
+                        vizinhos.append((nx, ny))
+                grafo[(x, y)] = vizinhos
 
-# Executando a busca em largura
-caminho = busca_em_largura(matriz, estado_inicial, objetivo)
-print("Caminho encontrado:", caminho)
+    return grafo
 
-#imprimindo o labirinto
-for i in range(len(matriz)):
-    for j in range(len(matriz[0])):
-        if (i, j) in caminho:
-            print("x", end=" ")
-        else:
-            print(matriz[i][j], end=" ")
-    print()
+# Matriz representando o labirinto
+matriz = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+    [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
+    [0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1],
+    [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
-print("Número de passos:", len(caminho) - 1)
+# Converte a matriz em um grafo
+grafo = matriz_para_grafo(matriz)
+
+# Coordenadas inicial e de destino
+start = (4, 11)
+destino = (10, 0)
+
+# Percorrer o grafo usando BFS até o destino
+caminho_bfs = percorrer_bfs_ate_destino(grafo, start, destino)
+
+# Imprime o labirinto percorrido
+imprimir_labirinto(matriz, caminho_bfs)
+
+# Imprime o caminho BFS
+print("Caminho percorrido até o destino:", caminho_bfs)
+
+# Calcula o custo do caminho (número de passos)
+custo = len(caminho_bfs) - 1  # Custo é o número de passos até o destino, ou seja, o tamanho do caminho - 1
+
+# Imprime a mensagem de custo
+print(f"Custo do caminho (número de passos): {custo}")
+
+
 
