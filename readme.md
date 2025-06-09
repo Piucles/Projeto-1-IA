@@ -28,7 +28,7 @@ Para executar este projeto, você precisará ter o **Python** e a biblioteca **P
 1.  **Execute o script Python**:
 
     ```bash
-    python seu_arquivo_principal.py
+    python labirintos.py
     ```
 
 2.  Ao iniciar, o programa solicitará que você **escolha um algoritmo de busca**:
