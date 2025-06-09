@@ -1,9 +1,5 @@
 # Smart Maze Solver
 
-This project implements a **graph-based search agent** designed to solve a maze using various search algorithms: **Breadth-First Search (BFS)**, **Depth-First Search (DFS)**, and **Greedy Best-First Search**. The agent's goal is to find a path from the starting point to the destination within a fixed number of moves. The implementation is modular, allowing for easy modification of sensors, actuators, and environment characteristics.
-
-The maze is represented by a 12x12 grid, where '0' signifies walls and '1' represents open paths. The agent starts at cell (4, 11) and aims to reach cell (10, 0).
-
 ---
 
 ## Table of Contents
@@ -12,9 +8,14 @@ The maze is represented by a 12x12 grid, where '0' signifies walls and '1' repre
 * [Installation](#installation)
 * [Usage](#usage)
 * [Maze and Movement Details](#maze-and-movement-details)
-* [Contribution](#contribution)
-* [License](#license)
-* [Contact](#contact)
+
+---
+
+## Description
+
+This project implements a **graph-based search agent** designed to solve a maze using various search algorithms: **Breadth-First Search (BFS)**, **Depth-First Search (DFS)**, and **Greedy Best-First Search**. The agent's goal is to find a path from the starting point to the destination within a fixed number of moves. The implementation is modular, allowing for easy modification of sensors, actuators, and environment characteristics.
+
+The maze is represented by a 12x12 grid, where '0' signifies walls and '1' represents open paths. The agent starts at cell (4, 11) and aims to reach cell (10, 0).
 
 ---
 
