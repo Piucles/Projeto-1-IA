@@ -28,7 +28,7 @@ To run this project, you'll need **Python** and the **Pygame** library installed
 1.  **Execute the Python script**:
 
     ```bash
-    python your_main_file.py
+    python labirintos.py
     ```
 
 2.  Upon launching, the program will prompt you to **choose a search algorithm**:
